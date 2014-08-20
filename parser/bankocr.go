@@ -6,6 +6,7 @@ import (
   "fmt"
   "io/ioutil"
   "strings"
+  "strconv"
 )
 
 var OCRToNumber = map[string]string{
@@ -99,4 +100,20 @@ func ParseAccountNumbersFile(filename string) (accountNumbers []string) {
   }
 
   return accountNumbers
+}
+
+func Checksum(accountNumber string) bool {
+  sum := 0
+
+  for index := len(accountNumber); index > 0; index-- {
+    val, convError := strconv.Atoi(string(accountNumber[index - 1]))
+
+    if convError != nil {
+      panic(convError)
+    }
+
+    sum += val * (len(accountNumber) - index + 1)
+  }
+
+  return sum % 11 == 0
 }
