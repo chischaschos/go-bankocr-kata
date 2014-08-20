@@ -2,8 +2,6 @@ package parser
 
 import (
   "bytes"
-  "errors"
-  "fmt"
   "io/ioutil"
   "strings"
   "strconv"
@@ -52,12 +50,12 @@ var OCRToNumber = map[string]string{
 
 }
 
-func ParseAccountNumber(accountNumberLines string) (resultNumber string, parseError error) {
+func ParseAccountNumber(accountNumberLines string) (resultNumber, status string) {
   rows := strings.Split(accountNumberLines, "\n")[0:3]
 
   resultNumber = ""
 
-  parseNumber: for i := 0; i < 27; i += 3 {
+  for i := 0; i < 27; i += 3 {
     currentNumber := ""
 
     for _, row := range rows {
@@ -67,14 +65,15 @@ func ParseAccountNumber(accountNumberLines string) (resultNumber string, parseEr
     value, ok := OCRToNumber[currentNumber]
 
     if !ok {
-      parseError = errors.New(fmt.Sprintf("Invalid number '%s'", currentNumber))
-      break parseNumber
+      status = "ILL"
+      resultNumber += "?"
+    } else {
+      resultNumber += value
     }
 
-    resultNumber += value
   }
 
-  return resultNumber, parseError
+  return resultNumber, status
 }
 
 func ParseAccountNumbersFile(filename string) (accountNumbers []string) {
@@ -89,13 +88,15 @@ func ParseAccountNumbersFile(filename string) (accountNumbers []string) {
   for i := 0; i < len(lines); i += 4 {
     if i + 4 < len(lines) {
       accountNumberOcr := string(bytes.Join(lines[i:i + 4], []byte{'\n'}))
-      accountNumber, parseError := ParseAccountNumber(accountNumberOcr)
+      accountNumber, status := ParseAccountNumber(accountNumberOcr)
 
-      if parseError == nil {
-        accountNumbers = append(accountNumbers, accountNumber)
-      } else {
-        fmt.Println(parseError)
+      if status == "" && !Checksum(accountNumber) {
+        accountNumber += " ERR"
+      } else if status != "" {
+        accountNumber += " " + status
       }
+
+      accountNumbers = append(accountNumbers, accountNumber)
     }
   }
 
