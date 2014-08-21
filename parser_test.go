@@ -30,9 +30,18 @@ var _ = Describe("Parser", func() {
   Context("When parsing an account numbers file", func() {
     It("should return a list of found account numbers", func() {
       Expect(parser.ParseAccountNumbersFile("account_numbers.txt")).To(Equal([]string{
-        "123456789",
-        "664371495 ERR",
+        "111111111 ERR",
+        "777777777 ERR",
+        "200000000 ERR",
+        "333333333 ERR",
+        "888888888 ERR",
+        "555555555 ERR",
+        "666666666 ERR",
+        "999999999 ERR",
+        "490067715 ERR",
         "?23456789 ILL",
+        "0?0000051 ILL",
+        "4?086771? ILL",
       }))
     })
   })
