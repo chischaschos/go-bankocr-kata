@@ -25,6 +25,15 @@ var _ = Describe("Parser", func() {
       Expect(number).To(Equal("?23456789"))
       Expect(status).To(Equal("ILL"))
     })
+
+    It("should return errors on invalid numbers", func() {
+      number := " _  _     _  _        _  _ \n" +
+                "|_ |_ |_| _|  |  ||_||_||_ \n" +
+                "|_||_|  | _|  |  |  |  | _|\n"
+      number, status := parser.ParseAccountNumber(number)
+      Expect(number).To(Equal("664371495"))
+      Expect(status).To(Equal("ERR"))
+    })
   })
 
   Context("When parsing an account numbers file", func() {

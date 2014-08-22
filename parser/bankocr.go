@@ -73,6 +73,10 @@ func ParseAccountNumber(accountNumberLines string) (resultNumber, status string)
 
   }
 
+  if status == "" && !Checksum(resultNumber) {
+    status = "ERR"
+  }
+
   return resultNumber, status
 }
 
@@ -88,11 +92,10 @@ func ParseAccountNumbersFile(filename string) (accountNumbers []string) {
   for i := 0; i < len(lines); i += 4 {
     if i + 4 < len(lines) {
       accountNumberOcr := string(bytes.Join(lines[i:i + 4], []byte{'\n'}))
+
       accountNumber, status := ParseAccountNumber(accountNumberOcr)
 
-      if status == "" && !Checksum(accountNumber) {
-        accountNumber += " ERR"
-      } else if status != "" {
+      if status != "" {
         accountNumber += " " + status
       }
 
