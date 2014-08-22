@@ -11,7 +11,7 @@ var _ = Describe("Parser", func() {
     It("should parse valid numbers", func() {
       number := "    _  _  _  _  _  _     _ \n" +
                 "|_||_|| ||_||_   |  |  ||_ \n" +
-                "  |  ||_||_||_|  |  |  | _|\n"
+                "  | _||_||_||_|  |  |  | _|\n"
       number, status := parser.ParseAccountNumber(number)
       Expect(number).To(Equal("490867715"))
       Expect(status).To(BeEmpty())
@@ -20,20 +20,30 @@ var _ = Describe("Parser", func() {
     It("should return errors on invalid numbers", func() {
       number := "    _  _     _  _  _  _  _ \n" +
                 " _| _| _||_||_ |_   ||_||_|\n" +
-                "  ||_  _|  | _||_|  ||_|  |\n"
+                "  ||_  _|  | _||_|  ||_| _|\n"
       number, status := parser.ParseAccountNumber(number)
-      Expect(number).To(Equal("?23456789"))
-      Expect(status).To(Equal("ILL"))
+      Expect(number).To(Equal("123456789"))
+      Expect(status).To(BeEmpty())
     })
 
     It("should return errors on invalid numbers", func() {
       number := " _  _     _  _        _  _ \n" +
                 "|_ |_ |_| _|  |  ||_||_||_ \n" +
-                "|_||_|  | _|  |  |  |  | _|\n"
+                "|_||_|  | _|  |  |  | _| _|\n"
       number, status := parser.ParseAccountNumber(number)
-      Expect(number).To(Equal("664371495"))
-      Expect(status).To(Equal("ERR"))
+      Expect(number).To(Equal("664371485"))
+      Expect(status).To(BeEmpty())
     })
+
+    It("should return errors on invalid numbers", func() {
+      number := "                           \n" +
+                "  |  |  |  |  |  |  |  |  |\n" +
+                "  |  |  |  |  |  |  |  |  |\n"
+      number, status := parser.ParseAccountNumber(number)
+      Expect(number).To(Equal("711111111"))
+      Expect(status).To(BeEmpty())
+    })
+
 
   })
 
@@ -44,11 +54,11 @@ var _ = Describe("Parser", func() {
         "777777177",
         "200800000",
         "333393333",
-        "888888888 AMB ['888886888', '888888880', '888888988']",
-        "555555555 AMB ['555655555', '559555555']",
-        "666666666 AMB ['666566666', '686666666']",
+        "888888888 AMB ['888886888', '888888988', '888888880']",
+        "555555555 AMB ['559555555', '555655555']",
+        "666666666 AMB ['686666666', '666566666']",
         "999999999 AMB ['899999999', '993999999', '999959999']",
-        "490067715 AMB ['490067115', '490067719', '490867715']",
+        "490067715 AMB ['490867715', '490067115', '490067719']",
         "123456789",
         "000000051",
         "490867715",
