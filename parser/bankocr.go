@@ -55,6 +55,23 @@ func ParseAccountNumber(accountNumberLines string) (resultNumber, status string)
 
   resultNumber = ""
 
+  parseEachNumber(rows, func(value string, ok bool) {
+    if !ok {
+      status = "ILL"
+      resultNumber += "?"
+    } else {
+      resultNumber += value
+    }
+  })
+
+  if status == "" && !Checksum(resultNumber) {
+    status = "ERR"
+  }
+
+  return resultNumber, status
+}
+
+func parseEachNumber(rows []string, callback func(string, bool)) {
   for i := 0; i < 27; i += 3 {
     currentNumber := ""
 
@@ -63,21 +80,8 @@ func ParseAccountNumber(accountNumberLines string) (resultNumber, status string)
     }
 
     value, ok := OCRToNumber[currentNumber]
-
-    if !ok {
-      status = "ILL"
-      resultNumber += "?"
-    } else {
-      resultNumber += value
-    }
-
+    callback(value, ok)
   }
-
-  if status == "" && !Checksum(resultNumber) {
-    status = "ERR"
-  }
-
-  return resultNumber, status
 }
 
 func ParseAccountNumbersFile(filename string) (accountNumbers []string) {
